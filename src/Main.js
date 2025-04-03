@@ -1,14 +1,28 @@
-// import { useState } from "react";
-// import { tempMovieData, tempWatchedData } from "./template-films";
-import MovieBox from "./MovieBox";
-import WatchBox from "./WatchBox";
-
-
+import { useState } from "react";
 
 export default function Main({ children }) {
   return (
     <main className="main">
       {children}
     </main>
+  );
+}
+
+export function Box({ children}) {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <div className="box">
+      <button
+        className="btn-toggle"
+        onClick={() => setIsOpen((open) => !open)}
+      >
+        {isOpen ? "–" : "+"}
+      </button>
+      {isOpen && (
+        <>
+          {children}
+        </>
+      )}
+    </div>
   );
 }
