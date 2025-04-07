@@ -11,16 +11,33 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsLoading] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState("");
   const [query, setQuery] = useState(""); //movie title in search
   const MOVIETITLE = query || "123"; //temp query or else
   const [selectedMovieID, setSelectedMovieID] = useState(null);
 
+ 
+
   function handleSelectedMovie(id) {
-    setSelectedMovieID((selectID) => (selectID ? null : id));
+    console.log("selectedMovieID: ", selectedMovieID);
+    console.log("current ID: ", id);
+
+    setSelectedMovieID((selectID) => (selectID === id ? null : id));
   }
+
   function handleClosedMovie(id) {
     setSelectedMovieID(null);
+  }
+
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
+
+  function handleClearMovie(id) {
+    setWatched((prevWatched) =>
+      prevWatched.filter((film) => film.imdbID !== id)
+    );
   }
 
   useEffect(
@@ -37,7 +54,6 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not found.");
           setMovies(data.Search);
         } catch (error) {
-          console.error(error.message);
           setErrorMessage(error.message);
         } finally {
           setIsLoading(false);
@@ -77,11 +93,16 @@ export default function App() {
               selectedMovieID={selectedMovieID}
               onClosedMovie={handleClosedMovie}
               KEY={KEY}
+              onAddWatched={handleAddWatched}
+              watched={watched}
+              
+              // isDetailLoading={isDetailLoading}
+              // onIsDetailLoading={setIsDetailLoading}
             />
           ) : (
             <>
               <Summary watched={watched} />
-              <WatchedMovieList watched={watched} />
+              <WatchedMovieList watched={watched} onClearMovie={handleClearMovie}/>
             </>
           )}
         </Box>
@@ -89,59 +110,6 @@ export default function App() {
     </>
   );
 }
-
-// function MovieDetails({ selectedMovieID, onClosedMovie }) {
-//   const [movie, setMovie] = useState({});
-//   const {
-//     Title: title,
-//     Year: year,
-//     Poster: poster,
-//     Runtime: runtime,
-//     imdbRatimg,
-//     Plot: plot,
-//     Released: released,
-//     Actors: actors,
-//     Director: director,
-//     Genre: genre,
-//   } = movie;
-//   console.log(year, title);
-  
-
-//   useEffect(function () {
-//     async function getMovieDetails() {
-//       const res = await fetch(
-//         `http://www.omdbapi.com/?i=${selectedMovieID}&apikey=${KEY}`
-//       );
-//       const data = await res.json();
-//       setMovie(data);
-//     }
-//     getMovieDetails();
-//   }, []);
-
-//   return (
-//     <div className="details">
-//       <header>
-//       <button className="btn-back" onClick={onClosedMovie}>
-//         {" "}
-//         &larr;
-//       </button>
-//       <img src={poster} alt={`Poster of ${title}`}/>
-//       <div className="details-overview">
-//         <h2>{title}</h2>
-//         <p>{released} &bull; {runtime}</p>
-//         <p>{genre}</p>
-//         <p><span>⭐️</span>
-//         {imdbRatimg} IMDb Rating</p>
-//         </div> 
-//       </header>
-//       <section>
-//         <p><em>{plot}</em></p>
-//         <p>Starring {actors}</p>
-//         <p>Directed by {director}</p>
-//       </section>
-//     </div>
-//   );
-// }
 
 function Loader() {
   return <p className="loader">...loading</p>;

@@ -8,14 +8,14 @@ export function MovieList({ movies, onSelectMovie }) {
   );
 }
 
-function Movie({ movie, onSelectMovie }) {
+function Movie({ movie, onSelectMovie}) {
   const hasPoster = movie.Poster !== "N/A";
   return (
     <li onClick={() => onSelectMovie(movie.imdbID)}>
       {hasPoster ? (
         <img src={movie.Poster} alt={`${movie.Title}`} />
       ) : (
-        <div style={{ gridRow: "1 / -1", margin:"auto"}}>❌</div>
+        <div style={{ gridRow: "1 / -1", margin: "auto" }}>🍿</div>
       )}
       <h3>{movie.Title}</h3>
       <div>

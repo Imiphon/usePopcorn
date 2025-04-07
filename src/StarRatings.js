@@ -7,6 +7,7 @@ const StarRatingStyle = {
   justifyContent:"center",
   gap: "16px",
 };
+
 const StarFrame = {
   display: "flex",
 };
@@ -24,13 +25,16 @@ export default function StarRating({
   color = "#fcc419",
   size = 2,
   messages = [],
-  defaultRating=0
+  defaultRating=0,
+  onSetRating = () => {} 
 }) {
   const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
 
   function handleRating(rating) {
     setRating(rating);
+  onSetRating(rating);
+
   }
   const textStyle = {
     lingeHight: "1",
