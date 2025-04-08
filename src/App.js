@@ -3,7 +3,8 @@ import { tempMovieData, tempWatchedData } from "./template-films";
 import Nav, { Logo, Search, FoundResult } from "./Nav";
 import Main, { Box } from "./Main";
 import { MovieList } from "./MovieBoxChilds";
-import { Summary, WatchedMovieList, MovieDetails } from "./WatchBoxChilds";
+import { Summary, WatchedMovieList } from "./WatchBoxChilds";
+import MovieDetails from "./MovieDetails";
 
 const KEY = "37c126e4";
 
@@ -17,12 +18,7 @@ export default function App() {
   const MOVIETITLE = query || "123"; //temp query or else
   const [selectedMovieID, setSelectedMovieID] = useState(null);
 
- 
-
   function handleSelectedMovie(id) {
-    console.log("selectedMovieID: ", selectedMovieID);
-    console.log("current ID: ", id);
-
     setSelectedMovieID((selectID) => (selectID === id ? null : id));
   }
 
@@ -42,19 +38,23 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
+
       async function getMovies() {
         try {
           setIsLoading(true);
           setErrorMessage("");
           const res = await fetch(
-            `http://www.omdbapi.com/?s=${MOVIETITLE}&apikey=${KEY}`
+            `http://www.omdbapi.com/?s=${MOVIETITLE}&apikey=${KEY}`,
+            { signal: controller.signal }
           );
           if (!res) throw new Error("Response does not work.");
           const data = await res.json();
           if (data.Response === "False") throw new Error("Movie not found.");
           setMovies(data.Search);
+          setErrorMessage("");
         } catch (error) {
-          setErrorMessage(error.message);
+          if (error.name !== "AbortError") setErrorMessage(error.message);
         } finally {
           setIsLoading(false);
         }
@@ -65,8 +65,12 @@ export default function App() {
         setErrorMessage("more info");
         return;
       }
-
+      handleClosedMovie();
       getMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
     [MOVIETITLE]
   );
@@ -95,14 +99,14 @@ export default function App() {
               KEY={KEY}
               onAddWatched={handleAddWatched}
               watched={watched}
-              
-              // isDetailLoading={isDetailLoading}
-              // onIsDetailLoading={setIsDetailLoading}
             />
           ) : (
             <>
               <Summary watched={watched} />
-              <WatchedMovieList watched={watched} onClearMovie={handleClearMovie}/>
+              <WatchedMovieList
+                watched={watched}
+                onClearMovie={handleClearMovie}
+              />
             </>
           )}
         </Box>

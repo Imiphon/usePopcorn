@@ -190,8 +190,8 @@ body {
 
 .btn-delete {
   position: absolute;
+  top: 1.8rem;
   right: 2.4rem;
-
   height: 1.8rem;
   aspect-ratio: 1;
   border-radius: 50%;
