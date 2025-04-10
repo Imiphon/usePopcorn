@@ -10,7 +10,10 @@ const KEY = "37c126e4";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem('watched');
+    return JSON.parse(storedValue);
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -35,6 +38,10 @@ export default function App() {
       prevWatched.filter((film) => film.imdbID !== id)
     );
   }
+
+  useEffect(function () {
+    localStorage.setItem('watched', JSON.stringify(watched))
+  }, [watched]);
 
   useEffect(
     function () {
