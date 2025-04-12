@@ -74,12 +74,12 @@ export default function MovieDetails({
   );
 
   useEffect(
-function () {
-    function callback(e) {
+    function () {
+      function callback(e) {
         //Escape is also click on Movie in MovieList
         if (e.code === "Escape") {
           onClosedMovie();
-        } 
+        }
       }
 
       document.addEventListener("keydown", callback);
@@ -87,7 +87,7 @@ function () {
       return function () {
         document.removeEventListener("keydown", callback);
       };
-},
+    },
     [onClosedMovie]
   );
 
