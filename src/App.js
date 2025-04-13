@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import { tempMovieData, tempWatchedData } from "./template-films";
 import Nav, { Logo, Search, FoundResult } from "./Nav";
 import Main, { Box } from "./Main";
 import { MovieList } from "./MovieBoxChilds";

@@ -21,9 +21,7 @@ export function Search({ query, setQuery }) {
 
   useEffect(function () {
     function callback(event) {
-      if (document.activeElement === inputEl.current) {
-        console.log("use callback");
-        
+      if (document.activeElement === inputEl.current) {        
         return};
       if (event.code === "Enter") {
         inputEl.current.focus();
