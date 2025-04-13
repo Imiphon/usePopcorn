@@ -9,12 +9,10 @@ const KEY = "37c126e4";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem('watched');
-    return JSON.parse(storedValue);
-  });
+  const [watched, setWatched] = useState(() =>
+    JSON.parse(localStorage.getItem("watched")) || []
+  );  
   const [isLoading, setIsLoading] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState("");
   const [query, setQuery] = useState(""); //movie title in search
   const MOVIETITLE = query || "123"; //temp query or else
