@@ -4,15 +4,16 @@ import Main, { Box } from "./Main";
 import { MovieList } from "./MovieBoxChilds";
 import { Summary, WatchedMovieList } from "./WatchBoxChilds";
 import MovieDetails from "./MovieDetails";
-import { useMovies } from "./useMovies";
 
+const KEY = "37c126e4";
 
 export default function App() {
-
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(() =>
     JSON.parse(localStorage.getItem("watched")) || []
   );  
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [query, setQuery] = useState(""); //movie title in search
   const MOVIETITLE = query || "123"; //temp query or else
   const [selectedMovieID, setSelectedMovieID] = useState(null);
@@ -21,7 +22,7 @@ export default function App() {
     setSelectedMovieID((selectID) => (selectID === id ? null : id));
   }
 
-  function handleCloseMovie() {
+  function handleClosedMovie(id) {
     setSelectedMovieID(null);
   }
 
@@ -34,22 +35,56 @@ export default function App() {
       prevWatched.filter((film) => film.imdbID !== id)
     );
   }
-//useMovies is custom hook 
- const {isLoading, errorMessage, movies, KEY} = useMovies(MOVIETITLE);
 
   useEffect(function () {
     localStorage.setItem('watched', JSON.stringify(watched))
   }, [watched]);
 
+  useEffect(
+    function () {
+      const controller = new AbortController();
+
+      async function getMovies() {
+        try {
+          setIsLoading(true);
+          setErrorMessage("");
+          const res = await fetch(
+            `https://www.omdbapi.com/?s=${MOVIETITLE}&apikey=${KEY}`,
+            { signal: controller.signal }
+          );
+          if (!res) throw new Error("Response does not work.");
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not found.");
+          setMovies(data.Search);
+          setErrorMessage("");
+        } catch (error) {
+          if (error.name !== "AbortError") setErrorMessage(error.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      if (MOVIETITLE.length < 3) {
+        setMovies([]);
+        setErrorMessage("more info");
+        return;
+      }
+      handleClosedMovie();
+      getMovies();
+
+      return function () {
+        controller.abort();
+      };
+    },
+    [MOVIETITLE]
+  );
+
   return (
     <>
       <Nav>
         <Logo />
-        <>
-        {/* functiondeclaration like handleCloseMovie are hoisted in react */}
-        <Search query={query} setQuery={setQuery} onCloseMovie={handleCloseMovie}/>
+        <Search query={query} setQuery={setQuery} />
         <FoundResult movies={movies} />
-        </>
       </Nav>
 
       <Main>
@@ -64,7 +99,7 @@ export default function App() {
           {selectedMovieID ? (
             <MovieDetails
               selectedMovieID={selectedMovieID}
-              onClosedMovie={handleCloseMovie}
+              onClosedMovie={handleClosedMovie}
               KEY={KEY}
               onAddWatched={handleAddWatched}
               watched={watched}

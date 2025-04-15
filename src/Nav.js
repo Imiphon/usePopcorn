@@ -13,25 +13,29 @@ export function Logo() {
   );
 }
 
-export function Search({ query, setQuery }) {
+export function Search({ query, setQuery, onCloseMovie }) {
   const inputEl = useRef(null);
   useEffect(function () {
     inputEl.current.focus();
   }, []);
 
-  useEffect(function () {
-    function callback(event) {
-      if (document.activeElement === inputEl.current) {        
-        return};
-      if (event.code === "Enter") {
-        inputEl.current.focus();
-        setQuery("");
+  useEffect(
+    function () {
+      function callback(event) {
+        if (document.activeElement === inputEl.current) {
+          return;
+        }
+        if (event.code === "Enter") {
+          inputEl.current.focus();
+          setQuery("");
+        }
       }
-    }
 
-    document.addEventListener("keydown", callback);
-    return () => document.addEventListener("keydown", callback);
-  }, [setQuery]);
+      document.addEventListener("keydown", callback);
+      return () => document.addEventListener("keydown", callback);
+    },
+    [setQuery]
+  );
 
   return (
     <input
@@ -40,6 +44,7 @@ export function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+        onFocus={onCloseMovie}
       ref={inputEl}
     />
   );
