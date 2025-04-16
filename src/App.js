@@ -6,12 +6,10 @@ import { Summary, WatchedMovieList } from "./WatchBoxChilds";
 import MovieDetails from "./MovieDetails";
 import { useMovies } from "./useMovies";
 
-
 export default function App() {
-
-  const [watched, setWatched] = useState(() =>
-    JSON.parse(localStorage.getItem("watched")) || []
-  );  
+  const [watched, setWatched] = useState(
+    () => JSON.parse(localStorage.getItem("watched")) || []
+  );
 
   const [query, setQuery] = useState(""); //movie title in search
   const MOVIETITLE = query || "123"; //temp query or else
@@ -34,21 +32,28 @@ export default function App() {
       prevWatched.filter((film) => film.imdbID !== id)
     );
   }
-//useMovies is custom hook 
- const {isLoading, errorMessage, movies, KEY} = useMovies(MOVIETITLE);
+  //useMovies is custom hook
+  const { isLoading, errorMessage, movies, KEY } = useMovies(MOVIETITLE);
 
-  useEffect(function () {
-    localStorage.setItem('watched', JSON.stringify(watched))
-  }, [watched]);
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   return (
     <>
       <Nav>
         <Logo />
         <>
-        {/* functiondeclaration like handleCloseMovie are hoisted in react */}
-        <Search query={query} setQuery={setQuery} onCloseMovie={handleCloseMovie}/>
-        <FoundResult movies={movies} />
+          {/* functiondeclaration like handleCloseMovie are hoisted in react */}
+          <Search
+            query={query}
+            setQuery={setQuery}
+            onCloseMovie={handleCloseMovie}
+          />
+          <FoundResult movies={movies} />
         </>
       </Nav>
 
